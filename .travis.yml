@@ -1,0 +1,14 @@
+dist: xenial
+language: python
+python:
+  - "3.7"
+
+script: ./build.sh
+
+deploy:
+  provider: pypi
+  user: lifeofguenter
+  password:
+    secure: GMoaiF4rIRw2J3+czz3JfLq03P1skBMUL8bdauoi6Inj8JCdzeEM87NWS5EECi+Xjhg1JtyUoU8+YeNuIjyLWD8hXQbPPkvJ38BA8YJ5Du1hny4+WWwADEenish3MSZhRs3O4pb2ON3YQnd2hZO8jHb3BFSvkTOeNrIJfRA32RjYa+NiGVYYE7KyJpo9dHcZfTixah/rYuNJibr3w0ICUk2hcQWKTc/s+wLOyCbV4JPaw38aYSnGc2LcNV+XvKFpw+JEkMoLAq3j69ZUuk9V0L5pJvlseisdnUm4J5MlMtIl6Wc9Jj4qx1suDwmSD/vNEMOBEhjdpiycbjUFDeuJFMQEqNFvwyQwGhHvcnetAihjTkCaA99mX8IF3n05b95s/8FMDKeYECOoBtaR+bi7TZmWmePF7h4CS6yh+GHf9ER+cTJvg7KKHzjxT7KjHe0jLIeWtfDLwy0ab/3+3/hg7aHlUOtAZwwe5RPX7jnn1Gvo1a+1AbPS3jxhUqWJCFTHQbvw/TEABQfTW87OH6NHiS88eqpgby9WkEKjQObtu3LXuPPCPewEOZLf8DianINil5zi4S3JhvlfLxP3RoB/7aN2DeihdAQB0DpJbmepxIZAsud4MkWa2qJqXleEDE4g9mqmOlMUKHO8veKdcM/kA7TUIU3a9SzZ7aYGWbRp2Wc=
+  on:
+    tags: true
