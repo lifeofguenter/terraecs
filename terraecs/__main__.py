@@ -92,11 +92,9 @@ def run(command):
         last_status = response['tasks'][0]['lastStatus']
 
         sleep_seconds = 5
-        if last_status == "PROVISIONING" or last_status == "PENDING" or last_status == "DEPROVISIONING":
+        if last_status in ['PROVISIONING', 'PENDING', 'DEPROVISIONING']:
             sleep_seconds = 10
-        elif last_status == "STOPPED":
-            break
-        elif last_status == "RUNNING" or last_status == "DEPROVISIONING":
+        elif last_status in ['STOPPED', 'RUNNING', 'DEPROVISIONING']:
             get_log_events_kwargs = {
                 'logGroupName': log_options['awslogs-group'],
                 'logStreamName': f"{log_options['awslogs-stream-prefix']}/{task_definition['taskDefinition']['containerDefinitions'][0]['name']}/{task_id}",
@@ -113,6 +111,9 @@ def run(command):
             if log_events['events']:
                 for event in log_events['events']:
                     print(event['message'])
+
+            if last_status == 'STOPPED':
+                break
 
         time.sleep(sleep_seconds)
 
