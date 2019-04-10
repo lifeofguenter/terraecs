@@ -1,8 +1,8 @@
 # terraecs
 
 [![Build Status](https://travis-ci.org/lifeofguenter/terraecs.svg?branch=master)](https://travis-ci.org/lifeofguenter/terraecs)
-[![PyPI](https://pypi.org/project/terraecs/)](https://img.shields.io/pypi/v/terraecs.svg)
-[![License](LICENSE)](https://img.shields.io/github/license/lifeofguenter/terraecs.svg)
+[![PyPI](https://img.shields.io/pypi/v/terraecs.svg)](https://pypi.org/project/terraecs/)
+[![License](https://img.shields.io/github/license/lifeofguenter/terraecs.svg)](LICENSE)
 
 Terraecs is a simple cli tool to run a once-off [ECS/Fargate](https://aws.amazon.com/fargate/) task that relies on a [terraformed](https://www.terraform.io/) infrastructure.
 
