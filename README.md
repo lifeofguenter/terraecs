@@ -43,10 +43,18 @@ output "task_definition_arn" {
 }
 ```
 
+Terraform 0.12 and later intentionally track only root module outputs in the state. To expose module outputs for external consumption, you must export them from the root module using an output block, which as of 0.12 can now be done for a single module all in one output:
+
+```hcl
+output "custom_ecs_task" {
+  value = module.custom_ecs_task
+}
+```
+
 Once you have applied your terraform config, pull the output into a json:
 
 ```bash
-$ terraform output -module=custom_ecs_task -json > output.json
+$ terraform output -json custom_ecs_task > output.json
 ```
 
 Now you can use `terraecs` to run any command based off the above task-definition:
