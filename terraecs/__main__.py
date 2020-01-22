@@ -33,7 +33,7 @@ def run(command):
         exit(1)
 
     for required_key in ['cluster_id', 'task_definition_arn', 'subnets', 'security_group_id']:
-        if not required_key in terraform_output or len(terraform_output[required_key]['value']) == 0:
+        if not required_key in terraform_output or len(terraform_output[required_key]) == 0:
             logging.error(f'could not find the {required_key}... Aborting')
             exit(1)
 
@@ -42,15 +42,15 @@ def run(command):
     logs_client = boto3.client('logs')
 
     task_definition = ecs_client.describe_task_definition(
-        taskDefinition=terraform_output['task_definition_arn']['value']
+        taskDefinition=terraform_output['task_definition_arn']
     )
 
     log_options = task_definition['taskDefinition']['containerDefinitions'][0]['logConfiguration']['options']
 
     # create new task with command override
     response = ecs_client.run_task(
-        cluster=terraform_output['cluster_id']['value'],
-        taskDefinition=terraform_output['task_definition_arn']['value'],
+        cluster=terraform_output['cluster_id'],
+        taskDefinition=terraform_output['task_definition_arn'],
         overrides={
             'containerOverrides': [
                 {
@@ -64,8 +64,8 @@ def run(command):
         launchType='FARGATE',
         networkConfiguration={
             'awsvpcConfiguration': {
-                'subnets': terraform_output['subnets']['value'],
-                'securityGroups': [terraform_output['security_group_id']['value']],
+                'subnets': terraform_output['subnets'],
+                'securityGroups': [terraform_output['security_group_id']],
                 'assignPublicIp': 'DISABLED',
             }
         },
@@ -82,7 +82,7 @@ def run(command):
     last_status = None
     while True:
         response = ecs_client.describe_tasks(
-            cluster=terraform_output['cluster_id']['value'],
+            cluster=terraform_output['cluster_id'],
             tasks=[task_arn],
         )
 
