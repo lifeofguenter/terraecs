@@ -11,7 +11,11 @@ output_file = None
 def get_exit_code(containers):
     for container in containers:
         if  '-cli' in container['name']:
-            return container['exitCode']
+            exit_code = container.get('exitCode')
+            if exit_code is None:
+                logging.error(f'could not find exit code for {container["name"]}', extra={'container': container})
+                exit_code = 1
+            return exit_code
 
 @click.group()
 @click.option('-f', type=click.File('rb'))
