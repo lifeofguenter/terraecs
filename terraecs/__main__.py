@@ -4,16 +4,37 @@ import json
 import logging
 import time
 
+
+class ContextFilter(logging.Filter):
+    def filter(self, record):
+        context = getattr(record, 'context')
+        record.context = ' - ' + json.dumps(context) if context else ''
+        return True
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s%(context)s')
+
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
+logger.addFilter(ContextFilter())
+
 boto3.set_stream_logger('', logging.INFO)
 
 output_file = None
+
+def log(message, level=logging.ERROR, **context):
+    logger.log(level, message, extra={'context': context})
 
 def get_exit_code(containers):
     for container in containers:
         if  '-cli' in container['name']:
             exit_code = container.get('exitCode')
             if exit_code is None:
-                logging.error(f'could not find exit code for {container["name"]}', extra={'container': container})
+                log(f'could not find exit code for {container["name"]}', container=container)
                 exit_code = 1
             return exit_code
 
@@ -33,12 +54,12 @@ def run(command):
     terraform_output = json.load(output_file)
 
     if not type(terraform_output) is dict:
-        logging.error(f'unable to parse {output_file}')
+        log(f'unable to parse {output_file}')
         exit(1)
 
     for required_key in ['cluster_id', 'task_definition_arn', 'subnets', 'security_group_id']:
         if not required_key in terraform_output or len(terraform_output[required_key]) == 0:
-            logging.error(f'could not find the {required_key}... Aborting')
+            log(f'could not find the {required_key}... Aborting')
             exit(1)
 
 
@@ -79,7 +100,7 @@ def run(command):
     task_arn = response['tasks'][0]['taskArn']
     task_id = task_arn.split('/')[-1]
 
-    logging.info(f'launched task: {task_arn}')
+    log(f'launched task: {task_arn}', logging.INFO)
 
     # fetch and output logs until exit
     next_forward_token = None
@@ -91,7 +112,7 @@ def run(command):
         )
 
         if not last_status == response['tasks'][0]['lastStatus']:
-            logging.info(response['tasks'][0]['lastStatus'])
+            log(response['tasks'][0]['lastStatus'], logging.INFO)
 
         last_status = response['tasks'][0]['lastStatus']
 
