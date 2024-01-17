@@ -2,7 +2,16 @@ import boto3
 import click
 import json
 import logging
+import os
+import requests
 import time
+
+from dotenv import load_dotenv
+load_dotenv()
+
+
+SLACK_CHANNEL = os.getenv('SLACK_CHANNEL')
+SLACK_WEBHOOK_URL = os.getenv('SLACK_WEBHOOK_URL')
 
 
 class ContextFilter(logging.Filter):
@@ -25,6 +34,19 @@ logger.addFilter(ContextFilter())
 boto3.set_stream_logger('', logging.INFO)
 
 output_file = None
+
+def notify_slack(text):
+    if not SLACK_WEBHOOK_URL:
+        return
+
+    payload = {
+        'text': text,
+    }
+
+    if SLACK_CHANNEL:
+        payload['channel'] = SLACK_CHANNEL
+
+    requests.post(SLACK_WEBHOOK_URL, json=payload)
 
 def log(message, level=logging.ERROR, **context):
     logger.log(level, message, extra={'context': context})
@@ -62,6 +84,7 @@ def run(command):
             log(f'could not find the {required_key}... Aborting')
             exit(1)
 
+    notify_slack(f'`terraecs run {" ".join(command)}` started')
 
     ecs_client = boto3.client('ecs')
     logs_client = boto3.client('logs')
@@ -142,7 +165,11 @@ def run(command):
 
         time.sleep(sleep_seconds)
 
-    exit(get_exit_code(response['tasks'][0]['containers']))
+    exit_code = get_exit_code(response['tasks'][0]['containers'])
+
+    notify_slack(f'`terraecs run {" ".join(command)}` finished with exit code {exit_code}')
+
+    exit(exit_code)
 
 if __name__ == "__main__":
     cli(None)

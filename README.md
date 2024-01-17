@@ -19,7 +19,9 @@ _Preview release, please do not use for anything important!_
 
 ```bash
 $ pip install terraecs
+$ cp .env.example .env
 ```
+Edit the `.env` file to your taste for Slack notifications.
 
 ## Usage
 

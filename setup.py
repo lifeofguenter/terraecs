@@ -22,6 +22,8 @@ setuptools.setup(
     install_requires=[
       'boto3',
       'click',
+      'python-dotenv',
+      'requests',
     ],
     entry_points={
         'console_scripts': [

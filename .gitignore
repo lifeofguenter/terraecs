@@ -1,9 +1,7 @@
-/.vscode/
+/*.egg-info
+/.env
 /.venv/
-
 /build/
 /dist/
-/*.egg-info
-__pycache__
-
 /output.json
+__pycache__
